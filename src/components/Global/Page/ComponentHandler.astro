@@ -1,0 +1,31 @@
+---
+interface Props {
+  component: any;
+}
+
+import HeroSlider from './HeroSlider.astro';
+import LeadForm from './LeadForm.astro';
+import Hero from './ContentSection/Hero.astro';
+
+const {component} = Astro.props;
+---
+{component.__component === "shared.hero-slider" &&
+<HeroSlider 
+  title={component.title}
+  heroImage={component.heroImage.attributes}
+  slides={component.slides} />
+}
+{component.__component === "sections.lead-form" &&
+<LeadForm
+  title={component.title}
+  description={component.description}
+  location={component.location}
+  emailPlaceholder={component.emailPlaceholder}
+  submitButton={component.submitButton}
+/>
+}
+{component.__component === "sections.hero" && 
+<Hero 
+  {...component}
+/>
+}

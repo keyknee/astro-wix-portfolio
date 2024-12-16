@@ -1,0 +1,25 @@
+---
+interface Props {
+  title: string;
+  emailPlaceholder: string;
+  location: string;
+  description: string;
+  submitButton: {
+    id: number;
+    text: string;
+    type: string;
+  }
+}
+
+const { title,emailPlaceholder,location,description,submitButton } = Astro.props;
+---
+<section>
+  <div class="content-container">
+    <h2 class="text-center">{title}</h2>
+    <p>{description}</p>
+    <form>
+      <input type="email" id="email" name="email"/>
+      <button class={submitButton.type}>{submitButton.text}</button>
+    </form>
+  </div>
+</section>

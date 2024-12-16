@@ -1,0 +1,62 @@
+---
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { Image } from "astro:assets";
+import { getProjects } from "@/lib/wix";
+
+const projectImages = import.meta.glob<{ default: ImageMetadata }>('/src/assets/projects/*.{jpeg,jpg,png,gif}');
+
+
+export const getStaticPaths = ( async () => {
+  const projects = await getProjects();
+  
+  return projects.map(project => ({
+    params: {slug: project.url.split("/").at(-1).split(".")[0]},
+    props: {...project}
+  }));
+}) satisfies GetStaticPaths;
+
+const { displayName, url, highlights, projectTechnologies} = Astro.props;
+---
+<BaseLayout>
+  <main class="px-[5vw] md:px-[calc(5vw*2)]">
+    <div class="flex flex-col md:flex-row gap-8 pt-12">
+      <Image 
+        class="md:max-w-[50%]"
+        src={projectImages[`/src/assets/projects/${url.split("//")[1]}_.png`]()}
+        alt={`screenshot of project ${displayName}`}
+      />
+      <div class="flex flex-col mb-[10vh]">
+        <h2 class="font-semibold text-3xl text-theme-primary-light dark:text-theme-primary-dark">{displayName}</h2>
+        <span class="font-light inline-flex items-center">Technology Used: 
+          <span class="inline-flex gap-2 ml-2">{projectTechnologies.map(projTech => 
+            <div class="inline-flex flex-col relative group">
+              <i class={`dark:group-hover:text-theme-primary-dark group-hover:text-theme-primary-light mx-auto relative text-xl icon-${projTech.iconClass}`} />
+              <div class="group-hover:block tooltip">{projTech.displayName}</div>
+            </div>
+          )}
+          </span>
+          <span class="ml-auto">
+            <a class="external-link-icon font-medium" href={url} target="_blank">Visit Site</a>
+          </span>
+        </span>   
+        <p class="mt-6">{highlights}</p>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  @tailwind base;
+  @tailwind utilities;
+  @tailwind components;
+
+  @layer components {
+    .external-link-icon {
+      @apply after:absolute after:block after:bottom-0 after:bg-black dark:after:bg-white after:ext-site-mask after:h-4 after:mb-px after:-right-5 after:w-4 hover:after:bg-theme-primary-light dark:hover:after:bg-theme-primary-dark hover:text-theme-primary-light dark:hover:text-theme-primary-dark relative;
+    }
+    .tooltip {
+      @apply absolute bg-template-bg-light dark:bg-template-bg-dark -bottom-6 hidden -left-[55%] p-1 text-theme-primary-light dark:text-theme-primary-dark text-xs;
+    }
+  }
+</style>

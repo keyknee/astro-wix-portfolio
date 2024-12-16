@@ -1,0 +1,58 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  heading: string;
+  subHeading: string;
+  buttons: {
+    type: "primary" | "secondary";
+    text: string;
+    url: string;
+    newTab: boolean;
+  }[],
+  picture: {
+    path: string;
+    alt: string;
+  }
+}
+
+const { heading, subHeading, buttons, picture } = Astro.props;
+const images = import.meta.glob<{ default: ImageMetadata }>(`/src/assets/**/*.{jpeg,jpg,png,gif}`);
+---
+
+<div class="hero-container">
+  <Image 
+    src={images[`${picture.path}`]()}
+    alt={picture.path} />
+  <div class="gradient-overlay"/>
+  <div class="text-container">
+    <h1 class="font-dancing-script font-bold text-5xl text-shadow-template-dark text-white">{heading}</h1>
+    <h2 class="font-semibold text-white text-xl">{subHeading}</h2>
+    <div class="flex mt-6 justify-evenly w-full">
+      {buttons.map((button) =>
+        <a class={`btn btn-${button.type} text-white`} target={button.newTab ? '_blank' : '_self'} href={button.url}>
+          {button.text}
+        </a>
+      )}
+    </div>
+  </div>
+</div>
+
+<style>
+  @tailwind base;
+  @tailwind utilities;
+  @tailwind components;
+
+  @layer components {
+    .gradient-overlay {
+      @apply absolute brightness-[.9] bg-gradient-to-bl dark:from-theme-primary-light dark:to-theme-secondary-light from-theme-primary-dark to-theme-secondary-dark h-screen opacity-40 w-full left-0 top-0;
+    }
+    .hero-container {
+      @apply relative max-h-screen overflow-hidden;
+    }
+    .text-container {
+      @apply absolute bottom-0 pb-4 pr-6 right-0;
+    }
+  } 
+  
+</style>

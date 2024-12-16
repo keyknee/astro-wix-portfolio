@@ -1,0 +1,209 @@
+---
+interface Props {
+  title: string;
+  heroImage: object;
+  slides: {
+    id: number;
+    subtitle: string;
+    url: string;
+    shortBlurb: string;
+  }[]; 
+}
+import markdownit from 'markdown-it'
+const {title, heroImage, slides} = Astro.props;
+---
+<div id="carousel-hero-image" style={{backgroundImage: `url(${import.meta.env.STRAPI_URL}${heroImage.formats.medium.url})`}}>
+  <div class="gradient-overlay"/>
+  <div class="text-container">
+    <h2 class="">{title}</h2>
+    <div class="slide-display-window">
+      <div class="slider-container">
+        <ul class="slider">
+          {slides.map(slide =>
+            <li id={`slide-${slide.subtitle.toLowerCase().replaceAll(" ","-").replaceAll("'","")}`} class="slide">
+              <h3 class="w-max">{slide.subtitle}</h3>
+            </li>
+          )}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="control-buttons-container">
+    {slides.map(slide => 
+      <div class="btn primary carousel-button h-3 w-3 rounded-full" data-target={`slide-${slide.subtitle.toLowerCase().replaceAll(' ','-').replaceAll("'", "")}`} aria-label={slide.subtitle} role="button" />
+    )}
+  </div>
+</div>
+<div class="slide-copy-container">
+  <div class="content-container">
+    {slides.map(slide => 
+      <div data-parent={`slide-${slide.subtitle.toLowerCase().replaceAll(" ","-").replaceAll("'","")}`} class="blurb hidden">
+        <div class="copy" set:html={slide.shortBlurb ? markdownit({
+          html: true,
+          linkify: true,
+        }).render(slide.shortBlurb) : ""}/>
+        {slide.url && <a class="btn-primary learn-more" href={slide.url}>Learn More</a>}
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  @tailwind base;
+  @layer base {
+    #carousel-hero-image{
+      @apply aspect-[9/6] md:aspect-[9/4] bg-cover flex flex-col items-end px-3 relative w-full justify-end;
+    }
+    .control-buttons-container {
+      @apply flex gap-5 relative self-center top-1;
+    }
+    .gradient-overlay {
+      @apply absolute brightness-[.9] bg-gradient-to-bl dark:from-theme-primary-light dark:to-theme-secondary-light from-theme-primary-dark to-theme-secondary-dark h-full opacity-40 w-full left-0;
+    }
+    h2 {
+      @apply text-6xl w-fit;
+    }
+    .slide-display-window {
+      @apply overflow-x-scroll relative w-full h-14 max-w-sm;
+    }
+    .slide {
+      @apply ml-16 snap-start w-max min-w-96;
+    }
+    .slide h3 {
+      @apply bg-clip-text bg-gradient-to-r font-semibold text-transparent from-theme-secondary-light dark:from-theme-secondary-dark to-theme-primary-light dark:to-theme-primary-dark text-2xl;
+    }
+    .slide-copy-container {
+      @apply flex flex-col overflow-hidden w-full;
+    }
+    .slide-copy-container > .blurb {
+      @apply absolute bg-template-bg-light dark:bg-template-bg-dark container left-0 mx-auto px-4 py-3 top-0 transition-opacity w-full;
+    }
+    .slider {
+      @apply inline-flex items-end snap-x;
+    }
+    .slider-container {
+      @apply absolute flex h-full;
+    }
+    .text-container {
+      @apply flex flex-wrap min-[895px]:flex-nowrap w-full gap-x-20 justify-end relative z-10 max-w-screen-xl;
+    }
+  }
+  .copy {
+    @apply flex flex-col gap-4;
+  }
+  .content-container {
+    position: relative;
+    min-height: 105.52px; 
+  }
+  .slide-display-window {
+    scrollbar-width: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const slides = document.querySelectorAll('.slide');
+    const buttons = document.querySelectorAll('.carousel-button');
+    const sliderContainer = document.querySelector('.slider-container');
+    
+
+    // Check if the user prefers reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Function to handle scroll to a specific slide
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetSlide = document.getElementById(button.getAttribute('data-target'));
+        if (prefersReducedMotion) {
+          targetSlide.scrollIntoView({ block: 'nearest', inline: 'start' });
+        } else {
+          targetSlide.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        }
+      });
+    });
+
+    // Function to handle smooth transitions
+    function handleTransition(oldElement, newElement) {
+      if (prefersReducedMotion) {
+        // Instant transition for reduced motion preference
+        if (oldElement) {
+          oldElement.classList.add('hidden');
+          oldElement.style.display = 'none';
+        }
+        if (newElement) {
+          newElement.classList.remove('hidden');
+          newElement.style.display = 'flex';
+        }
+      } else {
+        // Smooth transition
+        if (oldElement) {
+          oldElement.style.transition = 'opacity 0.3s ease-out';
+          oldElement.style.opacity = '0';
+          oldElement.classList.add('hidden');
+          oldElement.style.display = 'none';
+          // setTimeout(() => {
+          //   oldElement.classList.add('hidden');
+          //   oldElement.style.display = 'none';
+          // }, 300);
+        }
+        if (newElement) {
+          newElement.classList.remove('hidden');
+          newElement.style.display = 'flex';
+          newElement.style.opacity = '0';
+          setTimeout(() => {
+            newElement.style.transition = 'opacity 0.3s ease-in';
+            newElement.style.opacity = '1';
+          }, 50);
+        }
+      }
+    }
+
+    let currentBlurb = null;
+
+    // Create the IntersectionObserver
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.getAttribute('id');
+        const button = document.querySelector(`.carousel-button[data-target="${id}"]`);
+        const blurb = document.querySelector(`.blurb[data-parent="${id}"]`);
+        
+        if (entry.isIntersecting) {
+          button.classList.add('active');
+          handleTransition(currentBlurb, blurb);
+          currentBlurb = blurb;
+        } else {
+          button.classList.remove('active');
+        }
+      });
+    }, {
+      threshold: 0.8,
+      root: document.querySelector(".slide-display-window")
+    });
+
+    // Observe each slide
+    slides.forEach(slide => {
+      observer.observe(slide);
+    });
+
+    // Handle edge case scrolling
+    let isScrolling = false;
+    sliderContainer.addEventListener('scroll', () => {
+      if (!isScrolling) {
+        isScrolling = true;
+        requestAnimationFrame(() => {
+          const scrollLeft = sliderContainer.scrollLeft;
+          const containerWidth = sliderContainer.clientWidth;
+          const scrollWidth = sliderContainer.scrollWidth;
+
+          if (scrollLeft === 0) {
+            sliderContainer.scrollLeft = scrollWidth - containerWidth;
+          } else if (scrollLeft + containerWidth >= scrollWidth) {
+            sliderContainer.scrollLeft = 0;
+          }
+
+          isScrolling = false;
+        });
+      }
+    });
+  });
+</script>

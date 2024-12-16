@@ -1,0 +1,318 @@
+---
+import Navbar from "../components/Global/Navbar.astro";
+import Footer from "../components/Global/Footer.astro";
+import '@fontsource-variable/dancing-script';	
+import { getPages, getSocialLinks } from "@/lib/wix";
+
+// const { metadata,favicon,notificationBanner,navbar,footer } = await getGlobal();
+
+const pages = await getPages().then(data => data.filter(page => page.slug))
+
+const navbar = {
+  button: {
+    url: "mailto:kini@introspectiveit.com",
+    newTab: true,
+    text: "Contact",
+    type: "primary"
+  },
+  links: pages.map(page => ({
+    url: `/${page.slug}`,
+    newTab: false,
+    text: page.title
+  })),
+  navbarLogo: undefined
+}
+
+const footer = {}
+
+const metadata = {
+  metaTitle: "Yakini Ledisi | Web Developer",
+  metaDescription: "Are you a creative looking to build a custom web presence that lets you focus on what you do best? Let's collaborate!"
+}
+
+const socialLinks = await getSocialLinks();
+
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{metadata.metaTitle}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content=`${metadata.metaDescription}`>
+    <link rel="icon" 
+      type={`image/png`} 
+      sizes={`32x31`} 
+      href="yk_favicon.png">
+  </head>
+  <body>
+    <Navbar
+      position="fixed"
+      backgroundType="solid"
+      homeAsImage={false}
+      navbarLogo={navbar.navbarLogo}
+      menuLinks={navbar.links}
+      menuButton={navbar.button}
+    />
+    <slot />
+    <Footer 
+      socialLinks={socialLinks}
+      position="static"
+      backgroundType="solid"
+      copyrightStartYear={"2024"}
+      copyrightHolder="Toni Kini Foster"
+    />
+  </body>
+</html>
+
+<style is:global>
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  @layer base {
+    :root {
+      --theme-primary-light: 178, 0, 130;
+      --theme-primary-dark: 255, 87, 172;
+      --theme-secondary-light: 58, 12, 163;
+      --theme-secondary-dark: 152, 154, 246;
+      --template-bg-light: 241, 245, 249;
+      --template-bg-dark: 30, 41, 59;
+    }
+    @font-face {
+      font-family: 'social-and-tech-icomoon';
+      src: url('/fonts/social-and-tech-icomoon.ttf?uvv53x') format('truetype'),
+        url('/fonts/social-and-tech-icomoon.woff?uvv53x') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: block;
+	  }
+
+    a {
+			@apply text-theme-primary-light hover:text-theme-secondary-light;
+		}
+		body {
+			@apply bg-slate-300 dark:bg-slate-700 min-h-full overflow-x-hidden;
+		}
+    h1 {
+      @apply text-6xl font-bold;
+    }
+    h2 {
+      @apply text-4xl;
+    }
+    html {
+			@apply text-slate-950 h-full;
+		}
+		html[data-theme="dark"] {
+			@apply text-slate-50;
+		}
+    main {
+			@apply max-w-screen-2xl w-screen mx-auto min-h-screen mt-12;
+		}
+    @media (prefers-color-scheme: dark) {
+      html  {
+        @apply text-slate-50;
+      }
+      a {
+        @apply text-theme-primary-dark hover:text-theme-secondary-dark;
+      }
+    }
+  }
+
+  @layer components {
+    .btn {
+      @apply text-white font-semibold h-fit py-2 px-5 rounded-full shadow-md;
+    }
+    .btn-primary {
+			@apply bg-theme-secondary-dark hover:bg-theme-primary-dark hover:cursor-pointer focus:outline-none focus:ring focus:ring-theme-secondary-light dark:focus:ring-theme-secondary-dark focus:ring-opacity-75;
+		}
+    .btn-secondary {
+      @apply border-2 border-theme-secondary-dark bg-clip-padding hover:border-theme-primary-dark;
+    }
+		.btn-primary.active {
+			@apply bg-theme-secondary-light dark:bg-theme-secondary-dark;
+		}
+		.carousel-subtitle {
+			@apply font-semibold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500 text-2xl;
+		}
+    .content-container {
+      @apply bg-template-bg-light dark:bg-template-bg-dark m-[3vw] p-[2vw];
+    }
+    .footer-ext-links-heading {
+			@apply text-xl font-semibold;
+		}
+
+    .font-dancing-script {
+      @apply font-['Dancing_Script_Variable'];
+    }
+    i {
+      /* use !important to prevent issues with browser extensions that change fonts */
+      font-family: 'social-and-tech-icomoon' !important;
+      font-style: normal;
+      font-weight: normal;
+      font-variant: normal;
+      text-transform: none;
+      line-height: 1;
+
+      /* Better Font Rendering =========== */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .mobile-nav-active {
+      @apply !right-0;
+    }
+    .navbar-background {
+			@apply absolute left-0 h-full w-full z-[-1];
+		}
+    .page-heading {
+			@apply text-center;
+		}
+  }
+    .icon-amazon:before {
+      content: "\e00";
+    }
+    .icon-amazonaws:before {
+      content: "\e01";
+    }
+    .icon-android:before {
+      content: "\e02";
+    }
+    .icon-apple:before {
+      content: "\e03";
+    }
+    .icon-applepodcasts:before {
+      content: "\e04";
+    }
+    .icon-astro:before {
+      content: "\e05";
+    }
+    .icon-bandcamp:before {
+      content: "\e06";
+    }
+    .icon-bluesky:before {
+      content: "\e07";
+    }
+    .icon-cloudflare:before {
+      content: "\e08";
+    }
+    .icon-digitalocean:before {
+      content: "\e09";
+    }
+    .icon-discord:before {
+      content: "\e0a";
+    }
+    .icon-docker:before {
+      content: "\e0b";
+    }
+    .icon-facebook:before {
+      content: "\e0c";
+    }
+    .icon-flask:before {
+      content: "\e0d";
+    }
+    .icon-gatsby:before {
+      content: "\e0e";
+    }
+    .icon-gimp:before {
+      content: "\e0f";
+    }
+    .icon-github:before {
+      content: "\e10";
+    }
+    .icon-html5:before {
+      content: "\e11";
+    }
+    .icon-inkscape:before {
+      content: "\e12";
+    }
+    .icon-instagram:before {
+      content: "\e13";
+    }
+    .icon-javascript:before {
+      content: "\e14";
+    }
+    .icon-jenkins:before {
+      content: "\e15";
+    }
+    .icon-jest:before {
+      content: "\e16";
+    }
+    .icon-kubernetes:before {
+      content: "\e17";
+    }
+    .icon-linkedin:before {
+      content: "\e18";
+    }
+    .icon-messenger:before {
+      content: "\e19";
+    }
+    .icon-mongodb:before {
+      content: "\e1a";
+    }
+    .icon-next-dot-js:before {
+      content: "\e1b";
+    }
+    .icon-npm:before {
+      content: "\e1c";
+    }
+    .icon-php:before {
+      content: "\e1d";
+    }
+    .icon-postgresql:before {
+      content: "\e1e";
+    }
+    .icon-python:before {
+      content: "\e1f";
+    }
+    .icon-reddit:before {
+      content: "\e20";
+    }
+    .icon-shopify:before {
+      content: "\e21";
+    }
+    .icon-slack:before {
+      content: "\e22";
+    }
+    .icon-soundcloud:before {
+      content: "\e23";
+    }
+    .icon-stackoverflow:before {
+      content: "\e24";
+    }
+    .icon-svelte:before {
+      content: "\e25";
+    }
+    .icon-tailwindcss:before {
+      content: "\e26";
+    }
+    .icon-telegram:before {
+      content: "\e27";
+    }
+    .icon-tiktok:before {
+      content: "\e28";
+    }
+    .icon-tumblr:before {
+      content: "\e29";
+    }
+    .icon-twitch:before {
+      content: "\e2a";
+    }
+    .icon-vercel:before {
+      content: "\e2b";
+    }
+    .icon-visualstudiocode:before {
+      content: "\e2c";
+    }
+    .icon-wordpress:before {
+      content: "\e2d";
+    }
+    .icon-x:before {
+      content: "\e2e";
+    }
+    .icon-youtube:before {
+      content: "\e2f";
+    }
+
+  
+</style>
