@@ -1,0 +1,51 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { getPages } from "@/lib/wix";
+import Hero from "@/components/Global/Page/ContentSection/Hero.astro";
+
+const pages = await getPages();
+const homePage = pages.filter(page => page.published && !page.slug)[0];
+
+
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*.jpg');
+const selfPortraitPath = '/src/assets/self_portrait.jpg'
+---
+
+<BaseLayout>
+  <main>
+    <div id="content-sections">
+      <Hero 
+        heading={homePage.heading}
+        subHeading={homePage.subHeading}
+        buttons={[
+          {
+            type: 'primary',
+            text: 'Projects',
+            newTab: false,
+            url: '/projects'
+          },
+          {
+            type: 'secondary',
+            text: 'Contact',
+            newTab: true,
+            url: 'mailto:kini@introspectiveit.com'
+          }
+        ]}
+        picture={{
+          path: selfPortraitPath,
+          alt: "self portrait"
+        }}
+      />
+      <!-- {contentSections.map(section => 
+        <ComponentHandler 
+          component={section}
+        />
+      )} -->
+      <div class="px-10 py-10 max-w-prose">
+        <p>
+          <!-- {contentSections.filter(section => section.__component === "sections.rich-text")[0].content} -->
+        </p>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

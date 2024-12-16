@@ -1,0 +1,14 @@
+---
+import type { StrapiImageType, ImageFormat, Formats } from "@/interfaces/Elements"
+interface Props extends StrapiImageType {
+  className?: string;
+};
+
+const { url, alternativeText, width, height, formats } = Astro.props.attributes;
+const { className } = Astro.props;
+
+const generateSrcSet = (formats: Formats) => Object.keys(formats).map(format => `${import.meta.env.STRAPI_URL}${formats[format]["url"]}`).join(', ')
+
+---
+
+<img class={className || ""} src={`${import.meta.env.STRAPI_URL}${url}`} srcset={formats ? generateSrcSet(formats) : ''} alt={alternativeText} style={{width: "100%"}}/>

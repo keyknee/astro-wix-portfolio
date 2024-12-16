@@ -1,0 +1,74 @@
+---
+interface Props {
+  position: 'fixed' | 'static'; 
+  homeAsImage?: boolean;
+  backgroundType: 'solid' | 'translucent';
+  navbarLogo?: {
+    id: number,
+    logoText: string,
+    logoImg: object
+  },
+  menuLinks: {
+    id?: number,
+    url: string,
+    newTab: boolean,
+    text: string
+  }[];
+  menuButton?: {
+    url: string;
+    newTab: boolean;
+    text: string;
+    type: "primary" | "secondary";
+  };
+}
+import { Astronav, MenuItems, MenuIcon, Dropdown, DropdownItems, DropdownSubmenu, OpenIcon, CloseIcon } from "astro-navbar";
+
+const { position,homeAsImage,backgroundType,navbarLogo,menuLinks,menuButton } = Astro.props;
+---
+<Astronav>
+  <div class={`navbar-container ${position} ${backgroundType === 'solid' ? 'bg-template-bg-light dark:bg-template-bg-dark' : 'backdrop-blur'}`}>
+    <a href="/">
+      {homeAsImage ? 
+        <img width={navbarLogo.logoImg.data.attributes.width} height={navbarLogo.logoImg.data.attributes.height} src={`${import.meta.env.STRAPI_URL}${navbarLogo.logoImg.data.attributes.url}`} /> :
+        `Home`
+      }
+    </a>
+    <div class="flex flex-col items-end">
+      <MenuIcon class="lg:hidden">
+        <OpenIcon class="text-theme-primary-light hover:text-theme-secondary-light dark:text-theme-primary-dark dark:hover:text-theme-secondary-dark lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="26px" fill="currentColor">
+            <path d="M120-240v-80h722v100H120Zm0-200v-80h720v100H120Zm0-200v-80h720v100H120Z"/>
+          </svg>
+        </OpenIcon>
+        <CloseIcon class="text-theme-primary-light hover:text-theme-secondary-light dark:text-theme-primary-dark dark:hover:text-theme-secondary-dark lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="26px" fill="currentColor">
+            <path d="m256-200-56-56 224-230-224-230 56-56 224 224 230-230 56 56-224 230 224 230-56 56-224-230-224 230Z"/>
+          </svg>
+        </CloseIcon>
+      </MenuIcon>
+      <MenuItems class="hidden lg:flex">
+        <ul class="flex flex-col lg:flex-row gap-4">
+          {menuLinks.map(link => 
+            <li><a href={link.url}>{link.text}</a></li>
+          )}
+          {menuButton ? <li><a class={`btn btn-${menuButton.type} rounded-lg px-2 py-1 max-lg:-ml-1`} href={menuButton.url} target={menuButton.newTab ? "_blank" : "_self"}>{menuButton.text}</a></li> : null}
+        </ul>
+      </MenuItems>
+    </div>
+  </div>
+</Astronav>
+
+<style>
+  @tailwind base;
+  @layer base {
+    #astronav-menu {
+      @apply font-bold;
+    }
+    .astronav-items {
+      @apply absolute bg-template-bg-light dark:bg-template-bg-dark left-0 lg:static top-full py-3 px-5 max-lg:shadow max-lg:shadow-slate-400 dark:shadow-slate-800 w-full;
+    }
+    .navbar-container {
+			@apply flex flex-row font-bold h-12 items-center justify-between px-5 py-3 shadow shadow-slate-400 dark:shadow-slate-800 top-0 w-full z-50;
+		}
+  }
+</style>

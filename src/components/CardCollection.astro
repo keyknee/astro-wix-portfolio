@@ -1,0 +1,15 @@
+---
+interface Props {
+  collectionItems: {}[]
+}
+
+import Card from "./Card.astro"
+const { collectionItems } = Astro.props;
+
+
+
+---
+{collectionItems.length > 0 && 
+<section>
+</section>
+}

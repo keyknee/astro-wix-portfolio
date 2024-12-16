@@ -1,0 +1,32 @@
+---
+interface Props {
+  position: "fixed" | "static";
+  backgroundType: 'solid' | 'translucent';
+  socialLinks?: string[];
+  socialLinksLabel?: string;
+  legalLinks?: {
+    "id": number,
+    "url": string,
+    "newTab": boolean,
+    "text": string,
+  }[];
+  menuLinks?: {
+    id: number,
+    url: string,
+    newTab: boolean,
+    text: string
+  }[];
+  menuLinksLabel?: string;
+  copyrightStartYear?: string;
+  copyrightHolder?: string;
+}
+import {SocialLinks} from '@/components/Social'
+const { position,backgroundType,socialLinks,socialLinksLabel,legalLinks,menuLinks,menuLinksLabel,copyrightStartYear,copyrightHolder } = Astro.props;
+---
+
+<footer class="justify-between bg-template-bg-light dark:bg-template-bg-dark">
+  <SocialLinks links={socialLinks} />
+  <div class="flex justify-between bg-stone-400 dark:bg-stone-800 px-5">
+    <span>&copy; {`${copyrightStartYear && copyrightStartYear !== new Date().getFullYear().toString() ? copyrightStartYear + ' - ' : ""} ${new Date().getFullYear()}`} {copyrightHolder && copyrightHolder}</span>
+  </div>
+</footer>

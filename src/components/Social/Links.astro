@@ -1,0 +1,20 @@
+---
+import {SocialIcon} from 'react-social-icons';
+
+interface Props {
+  links: string[];
+}
+
+const {links} = Astro.props;
+
+---
+
+<div class="px-4 py-1">
+  {links.map((link,i) => 
+    <SocialIcon 
+      key={i}
+      bgColor="transparent"
+      fgColor="currentColor"
+      url={link}/>
+  )}
+</div>
